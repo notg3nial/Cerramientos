@@ -24,10 +24,13 @@
             <button class="btn btn-import" onclick="importar()">
                 ↑ Importar
             </button>
+            <button class="btn btn-import" onclick="limpiar()">
+                ⟲ Reiniciar
+            </button>
             <input type="file" id="file-input" accept=".csv,.txt" style="display:none"
                 onchange="procesarArchivo(event)">
-            <button class="btn btn-import" id="confirmar" onclick="confirmar()" style="display:none">✓
-                Confirmar</button>
+            <button class="btn btn-import" id="confirmar" onclick="confirmar()" style="display:none">
+                ✓ Confirmar</button>
 
 
         </div>
@@ -35,19 +38,20 @@
 
     <div class="stats">
         <div class="stat-card">
+            <div class="stat-dot" style="background:#7ec8ff"></div>
+            <input type="text" id="stat-ref-obra" list="obra-list" placeholder="Selecciona o escribe Ref Obra"
+                style="color:#7ec8ff; border:none; background:none; font-size: inherit;">
+            <datalist id="obra-list">
+            </datalist>
+        </div>
+        <div class="stat-card">
             <div class="stat-dot"></div>
             <div>
                 <div class="stat-label">Filas</div>
                 <div class="stat-value" id="stat-rows">0</div>
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-dot" style="background:#7ec8ff"></div>
-            <div>
-                <div class="stat-label">Ø Max</div>
-                <div class="stat-value" id="stat-diam" style="color:#7ec8ff">—</div>
-            </div>
-        </div>
+
         <div class="stat-card">
             <div class="stat-dot" style="background:#d08fff"></div>
             <div>
@@ -98,12 +102,22 @@
         </div>
     </div>
 
+
     <div class="overlay" id="overlay-confirm2">
         <div class="modal">
             <h2>⚠ Valores erroneos detectados</h2>
             <p>Hay valores incorrectos en los datos importados</p>
             <div class="modal-actions">
-                <button class="btn btn-cancel" onclick="cerrarConfirm2()">Cancelar</button>
+                <button class="btn btn-cancel" onclick="cerrarConfirm()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div class="overlay" id="overlay-confirm3">
+        <div class="modal">
+            <h2>⚠ Selecciona una obra</h2>
+            <p>Debes seleccionar una obra antes de continuar</p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="cerrarConfirm()">Cancelar</button>
             </div>
         </div>
     </div>

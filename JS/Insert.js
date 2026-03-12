@@ -4,23 +4,13 @@ let datos = [];
 
 //<--Funciones para importar csv-->
 function importar() {
-
     document.getElementById('file-input').click();
 }
 
 function procesarArchivo(event) {
-    document.getElementById('table-body').innerHTML = `
-        <tr id="empty-row">
-            <td colspan="6">
-                <div class="empty-state">
-                    <div class="empty-icon">⬡</div>
-                    <p>Sin datos — Importa un registro</p>
-                </div>
-            </td>
-        </tr>
-        `;
-    datos = [];
-    numTotal = 0;
+
+    limpiar()
+
     const archivo = event.target.files[0];
     if (!archivo) return;
 
@@ -144,11 +134,9 @@ function rellenarTabla(datos) {
                             datos[i].long = nuevoValor;
 
                         }
-
-
-
                     }
                 }
+
                 input.addEventListener('blur', function () { guardar(index); });
                 input.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter') input.blur();
@@ -160,8 +148,6 @@ function rellenarTabla(datos) {
 
             });
 
-
-
         });
 
         tbody.appendChild(tr);
@@ -172,6 +158,28 @@ function rellenarTabla(datos) {
     document.getElementById('stat-tot').textContent = `${numTotal}`;
 
 }
+
+function limpiar() {
+    datos = [];
+    document.getElementById('table-body').innerHTML = `
+        <tr id="empty-row">
+            <td colspan="6">
+                <div class="empty-state">
+                    <div class="empty-icon">⬡</div>
+                    <p>Sin datos — Importa un registro</p>
+                </div>
+            </td>
+        </tr>
+        `;
+
+    document.getElementById('row-count').textContent = "0 elementos";
+    document.getElementById('stat-rows').textContent = 0;
+    numTotal = 0;
+    document.getElementById('stat-tot').textContent = "—";
+    document.getElementById('confirmar').style.display = 'none';
+    document.getElementById('stat-ref-obra').value = '';
+}
+
 
 
 
@@ -197,8 +205,18 @@ function comprobar() {
 
     });
 
-    if (mensaje) {
 
+    if (mensaje) {
+        if (!getIdByRef(document.getElementById('stat-ref-obra').value)) {
+            document.getElementById('overlay-confirm3').classList.add('open');
+            peligro = true
+            mensaje = false;
+
+
+        }
+    }
+
+    if (mensaje) {
         tbody.querySelectorAll('tr').forEach(function (tr) {
 
             tr.querySelectorAll('td').forEach(function (td, index) {
@@ -212,7 +230,14 @@ function comprobar() {
             });
         });
     }
+
+
     return peligro
+
+
+
+
+
 }
 
 function confirmar() {
@@ -223,10 +248,9 @@ function confirmar() {
 
 function cerrarConfirm() {
     document.getElementById('overlay-confirm').classList.remove('open');
-}
-
-function cerrarConfirm2() {
     document.getElementById('overlay-confirm2').classList.remove('open');
+    document.getElementById('overlay-confirm3').classList.remove('open');
+
 }
 
 function enviarDatos() {
@@ -234,29 +258,65 @@ function enviarDatos() {
 
 
 
-   //Api, conexion de la base de datos
+    //Api, conexion de la base de datos
+    console.log('Enviando datos...');
+    datos.forEach(fila => {
+        parseInt(fila.tipo);
+        String(fila.pos)
+        parseInt(fila.diam) || 0;
+        parseInt(fila.num) || 0;
+        parseInt(fila.long) || 0;
+
+
+    });
+    limpiar()
+}
 
 
 
 
+/*Pruebas*/
 
-    document.getElementById('table-body').innerHTML = `
-        <tr id="empty-row">
-            <td colspan="6">
-                <div class="empty-state">
-                    <div class="empty-icon">⬡</div>
-                    <p>Sin datos — Importa o añade filas</p>
-                </div>
-            </td>
-        </tr>
-        `;
+const referenciasObras = [];
+for (let i = 1; i <= 400; i++) {
+    // formato libre, aquí sólo para que se vea la numeración
+    referenciasObras.push({
+        id: i,
+        ref: 'OBRA' + i.toString().padStart(3, '0')
+    });
+}
 
-    document.getElementById('row-count').textContent = "0 elementos";
-    document.getElementById('stat-rows').textContent = 0;
-    numTotal = 0;
-    document.getElementById('stat-tot').textContent = "—";
-    document.getElementById('confirmar').style.display = 'none';
+async function cargarReferencias() {
+    try {
+        // si tuvieras API descomenta estas líneas
+        // const response = await fetch('/api/obras');
+        // if (!response.ok) throw new Error('Error al cargar referencias');
+        // const obras = await response.json();
 
-    datos = [];//vaciar datos
+        // mientras tanto usa el array simulado
+        const obras = referenciasObras;
 
+        const datalist = document.getElementById('obra-list');
+        datalist.innerHTML = '';
+        obras.forEach(obra => {
+            const option = document.createElement('option');
+            option.value = obra.ref;
+            datalist.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error cargando referencias:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', cargarReferencias);
+
+
+function getIdByRef(ref) {
+    const obra = referenciasObras.find(item => item.ref === ref);
+
+    if (!obra) {
+        return null;
+    }
+
+    return obra.id;
 }
