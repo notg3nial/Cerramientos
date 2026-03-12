@@ -1,18 +1,26 @@
 //Js para la funcionalidad de importacion de datos 
-
 let numTotal = 0;
-const datos = [];
-
-
-
-
+let datos = [];
 
 //<--Funciones para importar csv-->
 function importar() {
+
     document.getElementById('file-input').click();
 }
 
 function procesarArchivo(event) {
+    document.getElementById('table-body').innerHTML = `
+        <tr id="empty-row">
+            <td colspan="6">
+                <div class="empty-state">
+                    <div class="empty-icon">⬡</div>
+                    <p>Sin datos — Importa un registro</p>
+                </div>
+            </td>
+        </tr>
+        `;
+    datos = [];
+    numTotal = 0;
     const archivo = event.target.files[0];
     if (!archivo) return;
 
@@ -23,7 +31,7 @@ function procesarArchivo(event) {
     };
     reader.readAsText(archivo);
     document.getElementById('confirmar').style.display = 'block';
-
+    event.target.value = '';
 }
 
 function parsearCSV(texto) {
@@ -53,12 +61,13 @@ function parsearCSV(texto) {
     rellenarTabla(datos);
 }
 
-
 function rellenarTabla(datos) {
+    console.log(datos)
     const tbody = document.getElementById('table-body');
+    // tbody.innerHTML = ``
     document.getElementById('empty-row').style.display = 'none';
 
-    datos.forEach(function (fila) {
+    datos.forEach(function (fila, i) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${fila.tipo}</td>
@@ -120,11 +129,24 @@ function rellenarTabla(datos) {
                     } else {
                         td.style.background = '';
                         td.style.borderLeft = '';
-                        if (index == 3) {
+                        if (index == 2) {
+                            datos[i].diam = nuevoValor;
+                        } else if (index == 3) {
                             numTotal = document.getElementById('stat-tot').textContent;
-                            console.log(parseInt(numTotal) + parseInt(nuevoValor))
-                            document.getElementById('stat-tot').textContent = parseInt(numTotal) + parseInt(nuevoValor);
+                            if (!/^\d+$/.test(valorActual.trim())) {
+                                document.getElementById('stat-tot').textContent = parseInt(numTotal) + parseInt(nuevoValor);
+                            } else {
+                                document.getElementById('stat-tot').textContent = parseInt(numTotal) - parseInt(valorActual) + parseInt(nuevoValor);
+                            }
+                            datos[i].num = nuevoValor;
+
+                        } else if (index == 4) {
+                            datos[i].long = nuevoValor;
+
                         }
+
+
+
                     }
                 }
                 input.addEventListener('blur', function () { guardar(index); });
@@ -135,7 +157,6 @@ function rellenarTabla(datos) {
                     }
 
                 });
-                console.log(index)
 
             });
 
@@ -151,8 +172,6 @@ function rellenarTabla(datos) {
     document.getElementById('stat-tot').textContent = `${numTotal}`;
 
 }
-
-
 
 
 
@@ -196,22 +215,48 @@ function comprobar() {
     return peligro
 }
 
-
-
 function confirmar() {
     if (!comprobar()) {
         enviarDatos();
     }
 }
+
 function cerrarConfirm() {
     document.getElementById('overlay-confirm').classList.remove('open');
 }
+
 function cerrarConfirm2() {
     document.getElementById('overlay-confirm2').classList.remove('open');
 }
 
 function enviarDatos() {
     cerrarConfirm();
-    console.log('Enviando datos...');
+
+
+
+   //Api, conexion de la base de datos
+
+
+
+
+
+    document.getElementById('table-body').innerHTML = `
+        <tr id="empty-row">
+            <td colspan="6">
+                <div class="empty-state">
+                    <div class="empty-icon">⬡</div>
+                    <p>Sin datos — Importa o añade filas</p>
+                </div>
+            </td>
+        </tr>
+        `;
+
+    document.getElementById('row-count').textContent = "0 elementos";
+    document.getElementById('stat-rows').textContent = 0;
+    numTotal = 0;
+    document.getElementById('stat-tot').textContent = "—";
+    document.getElementById('confirmar').style.display = 'none';
+
+    datos = [];//vaciar datos
 
 }
