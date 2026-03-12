@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="Héctor de Pablos" content="Artepref">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/Insert.css">
+    <link rel="icon" href="../css/img/578cc4c3-8b3f-47d0-bbd2-b4d1b4e8defd.jpg">
+    <title>Importar datos</title>
+</head>
+
+<body>
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><img src="../css/img/578cc4c3-8b3f-47d0-bbd2-b4d1b4e8defd.jpg"></img></div>
+            <div>
+                <h1>Artepref</h1>
+                <p>Gestión de Cerramientos</p>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button class="btn btn-import" onclick="importar()">
+                ↑ Importar
+            </button>
+            <input type="file" id="file-input" accept=".csv,.txt" style="display:none"
+                onchange="procesarArchivo(event)">
+            <button class="btn btn-import" id="confirmar" onclick="confirmar()" style="display:none">✓
+                Confirmar</button>
+
+
+        </div>
+    </header>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-dot"></div>
+            <div>
+                <div class="stat-label">Filas</div>
+                <div class="stat-value" id="stat-rows">0</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-dot" style="background:#7ec8ff"></div>
+            <div>
+                <div class="stat-label">Ø Max</div>
+                <div class="stat-value" id="stat-diam" style="color:#7ec8ff">—</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-dot" style="background:#d08fff"></div>
+            <div>
+                <div class="stat-label">Nº. Total</div>
+                <div class="stat-value" id="stat-tot" style="color:#d08fff">—</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+        <div class="table-header-bar">
+            <span class="table-title">Listado de Cerramientos</span>
+            <span class="table-badge" id="row-count">0 elementos</span>
+        </div>
+        <div class="table-container">
+            <table id="main-table">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Posición</th>
+                        <th>Diámetro (cm)</th>
+                        <th>Nº Cerramientos</th>
+                        <th>Longitud (cm)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr id="empty-row">
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-icon">⬡</div>
+                                <p>Sin datos — Importa un registro</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="overlay" id="overlay-confirm">
+        <div class="modal">
+            <h2>⚠ Celdas vacías detectadas</h2>
+            <p>Hay celdas sin valor en los datos importados. ¿Deseas continuar igualmente?</p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="cerrarConfirm()">Cancelar</button>
+                <button class="btn btn-import" onclick="enviarDatos()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay-confirm2">
+        <div class="modal">
+            <h2>⚠ Valores erroneos detectados</h2>
+            <p>Hay valores incorrectos en los datos importados</p>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="cerrarConfirm2()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="../js/Insert.js"></script>
+
+</html>
