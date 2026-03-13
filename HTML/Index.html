@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="Héctor de Pablos" content="Artepref">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/Insert.css">
+    <link rel="stylesheet" href="../css/Index.css">
     <link rel="icon" href="../css/img/578cc4c3-8b3f-47d0-bbd2-b4d1b4e8defd.jpg">
     <title>Importar datos</title>
 </head>
@@ -39,8 +39,8 @@
     <div class="stats">
         <div class="stat-card">
             <div class="stat-dot" style="background:#7ec8ff"></div>
-            <input type="text" id="stat-ref-obra" list="obra-list" placeholder="Selecciona o escribe Ref Obra"
-                style="color:#7ec8ff; border:none; background:none; font-size: inherit;">
+            <input type="text" id="stat-ref-obra" list="obra-list" placeholder="Escribe una Obra"
+                style="color:#7ec8ff; border:none; background:none; font-size: inherit;" autocomplete="off">
             <datalist id="obra-list">
             </datalist>
         </div>
@@ -121,7 +121,16 @@
             </div>
         </div>
     </div>
+    <div id="progress-overlay">
+        <div id="progress-box">
+            <p id="progress-label">Enviando datos...</p>
+            <div id="progress-track">
+                <div id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
 </body>
-<script src="../js/Insert.js"></script>
+<script src="../js/Api.js"></script>
+<script src="../js/Index.js"></script>
 
 </html>

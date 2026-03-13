@@ -1,6 +1,6 @@
-//Js para la funcionalidad de importacion de datos 
 let numTotal = 0;
 let datos = [];
+document.addEventListener('DOMContentLoaded', cargarReferencias);
 
 //<--Funciones para importar csv-->
 function importar() {
@@ -52,9 +52,7 @@ function parsearCSV(texto) {
 }
 
 function rellenarTabla(datos) {
-    console.log(datos)
     const tbody = document.getElementById('table-body');
-    // tbody.innerHTML = ``
     document.getElementById('empty-row').style.display = 'none';
 
     datos.forEach(function (fila, i) {
@@ -177,67 +175,6 @@ function limpiar() {
     numTotal = 0;
     document.getElementById('stat-tot').textContent = "—";
     document.getElementById('confirmar').style.display = 'none';
-    document.getElementById('stat-ref-obra').value = '';
-}
-
-
-
-
-
-
-//<--Funciones para insertar en la base de datos-->
-function comprobar() {
-    peligro = false;
-    mensaje = true;
-
-    const tbody = document.getElementById('table-body');
-    tbody.querySelectorAll('tr').forEach(function (tr) {
-
-        tr.querySelectorAll('td').forEach(function (td, index) {
-            if (index < 2) return;
-            if (!/^\d+$/.test(td.textContent.trim()) && td.textContent.trim() !== '—') {
-                document.getElementById('overlay-confirm2').classList.add('open');
-                peligro = true
-                mensaje = false;
-            }
-
-        })
-
-    });
-
-
-    if (mensaje) {
-        if (!getIdByRef(document.getElementById('stat-ref-obra').value)) {
-            document.getElementById('overlay-confirm3').classList.add('open');
-            peligro = true
-            mensaje = false;
-
-
-        }
-    }
-
-    if (mensaje) {
-        tbody.querySelectorAll('tr').forEach(function (tr) {
-
-            tr.querySelectorAll('td').forEach(function (td, index) {
-
-                if (index < 2) return;
-                if (td.textContent.trim() === '—') {
-                    document.getElementById('overlay-confirm').classList.add('open');
-                    peligro = true
-                }
-
-            });
-        });
-    }
-
-
-    return peligro
-
-
-
-
-
 }
 
 function confirmar() {
@@ -246,77 +183,4 @@ function confirmar() {
     }
 }
 
-function cerrarConfirm() {
-    document.getElementById('overlay-confirm').classList.remove('open');
-    document.getElementById('overlay-confirm2').classList.remove('open');
-    document.getElementById('overlay-confirm3').classList.remove('open');
 
-}
-
-function enviarDatos() {
-    cerrarConfirm();
-
-
-
-    //Api, conexion de la base de datos
-    console.log('Enviando datos...');
-    datos.forEach(fila => {
-        parseInt(fila.tipo);
-        String(fila.pos)
-        parseInt(fila.diam) || 0;
-        parseInt(fila.num) || 0;
-        parseInt(fila.long) || 0;
-
-
-    });
-    limpiar()
-}
-
-
-
-
-/*Pruebas*/
-
-const referenciasObras = [];
-for (let i = 1; i <= 400; i++) {
-    // formato libre, aquí sólo para que se vea la numeración
-    referenciasObras.push({
-        id: i,
-        ref: 'OBRA' + i.toString().padStart(3, '0')
-    });
-}
-
-async function cargarReferencias() {
-    try {
-        // si tuvieras API descomenta estas líneas
-        // const response = await fetch('/api/obras');
-        // if (!response.ok) throw new Error('Error al cargar referencias');
-        // const obras = await response.json();
-
-        // mientras tanto usa el array simulado
-        const obras = referenciasObras;
-
-        const datalist = document.getElementById('obra-list');
-        datalist.innerHTML = '';
-        obras.forEach(obra => {
-            const option = document.createElement('option');
-            option.value = obra.ref;
-            datalist.appendChild(option);
-        });
-    } catch (error) {
-        console.error('Error cargando referencias:', error);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', cargarReferencias);
-
-
-function getIdByRef(ref) {
-    const obra = referenciasObras.find(item => item.ref === ref);
-
-    if (!obra) {
-        return null;
-    }
-
-    return obra.id;
-}
