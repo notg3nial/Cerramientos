@@ -50,6 +50,8 @@ function cerrarConfirm() {
     document.getElementById('overlay-confirm').classList.remove('open');
     document.getElementById('overlay-confirm2').classList.remove('open');
     document.getElementById('overlay-confirm3').classList.remove('open');
+    document.getElementById('overlay-confirm4').classList.remove('open');
+
 
 }
 
@@ -139,7 +141,7 @@ function getIdByRef(texto) {
 
 /*Api*/
 // Función para insertar un cerramiento en la base de datos
-async function insertarCerramiento(datos, idObra) {
+async function insertarCerramiento(datos, idObra) { 
     const response = await fetch('http://10.20.20.85:8001/cerramiento/insertar', {
         method: 'POST',
         headers: {

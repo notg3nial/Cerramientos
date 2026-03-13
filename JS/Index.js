@@ -14,6 +14,11 @@ function procesarArchivo(event) {
     const archivo = event.target.files[0];
     if (!archivo) return;
 
+    const esCSV = archivo.name.endsWith('.csv') || archivo.type === 'text/csv';
+    if (!esCSV) {
+        document.getElementById('overlay-confirm4').classList.add('open');  
+        return;
+    }
     const reader = new FileReader();
     reader.onload = function (e) {
         const contenido = e.target.result;
@@ -43,9 +48,9 @@ function parsearCSV(texto) {
             num: cols[3],
             long: cols[4]
         });
-        if (cols[3].trim() != '')
+        if (cols[3].trim() != '' && /^\d+$/.test(cols[3].trim())) {
             numTotal = numTotal + parseInt(cols[3]);
-
+        }
     });
 
     rellenarTabla(datos);
@@ -109,18 +114,23 @@ function rellenarTabla(datos) {
                 function guardar(index) {
                     const nuevoValor = input.value.trim();
                     td.textContent = nuevoValor === '' ? '—' : nuevoValor;
+                    numTotal = document.getElementById('stat-tot').textContent;
 
                     // Vuelve a remarcar si está vacío
                     if (nuevoValor === '—' || ! /^\d+$/.test(nuevoValor)) {
                         td.style.background = 'rgba(224, 64, 64, 0.15)';
                         td.style.borderLeft = '2px solid var(--danger)';
+
+                        if (index == 3 && /^\d+$/.test(valorActual.trim())) {
+                            document.getElementById('stat-tot').textContent = parseInt(numTotal) - parseInt(valorActual);
+
+                        }
                     } else {
                         td.style.background = '';
                         td.style.borderLeft = '';
                         if (index == 2) {
                             datos[i].diam = nuevoValor;
                         } else if (index == 3) {
-                            numTotal = document.getElementById('stat-tot').textContent;
                             if (!/^\d+$/.test(valorActual.trim())) {
                                 document.getElementById('stat-tot').textContent = parseInt(numTotal) + parseInt(nuevoValor);
                             } else {
