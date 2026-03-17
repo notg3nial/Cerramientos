@@ -2,7 +2,7 @@ let obras = [];
 
 
 
-//<--Funciones para uso de datos-->
+//Funciones para uso de datos-->
 function comprobar() {
     peligro = false;
     mensaje = true;
@@ -22,7 +22,7 @@ function comprobar() {
 
 
     if (mensaje) {
-        if (!getIdByRef(document.getElementById('stat-ref-obra').value)) {
+        if (!document.getElementById('stat-ref-obra').value) {
             document.getElementById('overlay-confirm3').classList.add('open');
             peligro = true
             mensaje = false;
@@ -56,13 +56,17 @@ function cerrarConfirm() {
 }
 
 async function enviarDatos() {
-
+    console.log((document.getElementById('stat-ref-obra').value).typeof);
     cerrarConfirm();
     const prog = mostrarProgreso('Insertando cerramientos...');
-    idObra = getIdByRef(document.getElementById('stat-ref-obra').value);
+    window.onbeforeunload = (e) => {
+        e.preventDefault();
+        e.returnValue = '';
+    };
     try {
+        const nombreObra = document.getElementById('stat-ref-obra').value.trim();
         for (let i = 0; i < datos.length; i++) {
-            await insertarCerramiento({ ...datos[i] } , idObra);
+            await insertarCerramiento({ ...datos[i] }, nombreObra);
             prog.actualizar(i + 1, datos.length);
         }
         prog.completar('Cerramientos insertados correctamente');
@@ -72,10 +76,10 @@ async function enviarDatos() {
     } catch (error) {
         prog.error('Error al insertar cerramiento');
         console.error(error);
+    } finally {
+        window.onbeforeunload = null;
     }
-
     limpiar();
-
 }
 
 function mostrarProgreso(label = 'Enviando datos...') {
@@ -121,28 +125,26 @@ async function cargarReferencias() {
         datalist.innerHTML = '';
         obras.forEach(obra => {
             const option = document.createElement('option');
-            option.value = obra.NombreObra + "-" + obra.Referencia;
-            option.dataset.id = obra.idObra;
+            option.value = obra.Obra;
             datalist.appendChild(option);
         });
+
     } catch (error) {
         console.error('Error cargando referencias:', error);
     }
 }
 
-function getIdByRef(texto) {
-    const option = Array.from(document.querySelectorAll('#obra-list option'))
-        .find(opt => opt.value === texto);
 
-    if (!option) return null;
 
-    return option.dataset.id;
+function formatear(valor) {
+    return 'T' + String(valor).padStart(3, '0');
 }
 
 /*Api*/
 // Función para insertar un cerramiento en la base de datos
-async function insertarCerramiento(datos, idObra) { 
-    const response = await fetch('http://10.20.20.85:8001/cerramiento/insertar', {
+async function insertarCerramiento(datos, nombreObra) {
+    console.log(formatear(datos.tipo));
+    const response = await fetch('http://10.20.20.85:8001/api/cerramiento/insertar', {
         method: 'POST',
         headers: {
             'accept': 'application/json',
@@ -150,13 +152,12 @@ async function insertarCerramiento(datos, idObra) {
         },
 
         body: JSON.stringify({
-            Tipo: datos.tipo,
+            Tipo: formatear(datos.tipo),
             Posicion: datos.pos,
             Diametro: datos.diam ? Number(datos.diam) : 0,
             Numero: datos.num ? Number(datos.num) : 0,
             Longitud: datos.long ? Number(datos.long) : 0,
-            idObra: idObra 
-
+            nombreObra: nombreObra
         })
     });
     if (!response.ok) throw new Error(`Error ${response.status}`);
