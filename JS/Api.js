@@ -1,6 +1,5 @@
 let obras = [];
-
-
+let erroneos = [];
 
 //Funciones para uso de datos-->
 function comprobar() {
@@ -39,7 +38,6 @@ function comprobar() {
                     document.getElementById('overlay-confirm').classList.add('open');
                     peligro = true
                 }
-
             });
         });
     }
@@ -56,22 +54,18 @@ function cerrarConfirm() {
 }
 
 async function enviarDatos() {
-    console.log((document.getElementById('stat-ref-obra').value).typeof);
+    const nombreObra = document.getElementById('stat-ref-obra').value.trim();
     cerrarConfirm();
     const prog = mostrarProgreso('Insertando cerramientos...');
     window.onbeforeunload = (e) => {
         e.preventDefault();
-        e.returnValue = '';
     };
     try {
-        const nombreObra = document.getElementById('stat-ref-obra').value.trim();
         for (let i = 0; i < datos.length; i++) {
-            await insertarCerramiento({ ...datos[i] }, nombreObra);
+            await postCerramiento({ ...datos[i] }, nombreObra);
             prog.actualizar(i + 1, datos.length);
         }
         prog.completar('Cerramientos insertados correctamente');
-
-        document.getElementById('stat-ref-obra').value = '';
 
     } catch (error) {
         prog.error('Error al insertar cerramiento');
@@ -80,6 +74,9 @@ async function enviarDatos() {
         window.onbeforeunload = null;
     }
     limpiar();
+
+    erroneos = await getErroneos(nombreObra);
+    rellenarTablaError(erroneos);
 }
 
 function mostrarProgreso(label = 'Enviando datos...') {
@@ -104,7 +101,7 @@ function mostrarProgreso(label = 'Enviando datos...') {
             setTimeout(() => {
                 overlay.classList.remove('visible');
                 bar.style.background = 'var(--accent)';
-            }, 800);
+            }, 1500);
         },
         error: (msg = 'Error en la petición') => {
             bar.style.background = '#ef4444';
@@ -142,8 +139,7 @@ function formatear(valor) {
 
 /*Api*/
 // Función para insertar un cerramiento en la base de datos
-async function insertarCerramiento(datos, nombreObra) {
-    console.log(formatear(datos.tipo));
+async function postCerramiento(datos, nombreObra) {
     const response = await fetch('http://10.20.20.85:8001/api/cerramiento/insertar', {
         method: 'POST',
         headers: {
@@ -164,7 +160,6 @@ async function insertarCerramiento(datos, nombreObra) {
 
     const result = await response.json();
     return result;
-
 }
 
 async function getObras() {
@@ -184,4 +179,26 @@ async function getObras() {
     } catch (error) {
         console.error('Error al obtener obras:', error);
     }
+}
+
+async function getErroneos(nombreObra) {
+    try {
+        const response = await fetch(`http://10.20.20.85:8001/api/cerramiento/diferencias/${encodeURIComponent(nombreObra)}`, {//cambiar endpoint
+
+            method: 'GET',
+            Headers: {
+                'accept': 'application/json'
+            }
+        });
+        if (!response.ok) throw new Error(`Error ${response.status}`);
+
+        const cerramientos = await response.json();
+        return cerramientos;
+
+
+    } catch (error) {
+        console.error('Error al obtener cerramientos:', error);
+
+    }
+
 }

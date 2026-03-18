@@ -337,3 +337,21 @@ td {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+
+
+/* ── TABLA ERROR ── */
+#tabla-error thead tr {
+    border-bottom: 2px solid var(--danger);
+}
+
+#tabla-error th {
+    color: var(--danger);
+}
+
+#tabla-error .table-header-bar {
+    background: rgba(224, 64, 64, .04);
+}
+
+#tabla-error tbody tr:hover {
+    background: rgba(224, 64, 64, .04);
+}

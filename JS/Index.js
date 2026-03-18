@@ -1,4 +1,3 @@
-let numTotal = 0;
 let datos = [];
 document.addEventListener('DOMContentLoaded', cargarReferencias);
 
@@ -16,7 +15,7 @@ function procesarArchivo(event) {
 
     const esCSV = archivo.name.endsWith('.csv') || archivo.type === 'text/csv';
     if (!esCSV) {
-        document.getElementById('overlay-confirm4').classList.add('open');  
+        document.getElementById('overlay-confirm4').classList.add('open');
         return;
     }
     const reader = new FileReader();
@@ -27,6 +26,7 @@ function procesarArchivo(event) {
     reader.readAsText(archivo);
     document.getElementById('confirmar').style.display = 'block';
     event.target.value = '';
+    document.getElementById('body-error').innerHTML = '';
 }
 
 function parsearCSV(texto) {
@@ -48,15 +48,14 @@ function parsearCSV(texto) {
             num: cols[3],
             long: cols[4]
         });
-        if (cols[3].trim() != '' && /^\d+$/.test(cols[3].trim())) {
-            numTotal = numTotal + parseInt(cols[3]);
-        }
+
     });
 
     rellenarTabla(datos);
 }
 
 function rellenarTabla(datos) {
+    document.getElementById('table-wrap').style.display = 'block';
     const tbody = document.getElementById('table-body');
     document.getElementById('empty-row').style.display = 'none';
 
@@ -114,28 +113,17 @@ function rellenarTabla(datos) {
                 function guardar(index) {
                     const nuevoValor = input.value.trim();
                     td.textContent = nuevoValor === '' ? '—' : nuevoValor;
-                    numTotal = document.getElementById('stat-tot').textContent;
-
                     // Vuelve a remarcar si está vacío
                     if (nuevoValor === '—' || ! /^\d+$/.test(nuevoValor)) {
                         td.style.background = 'rgba(224, 64, 64, 0.15)';
                         td.style.borderLeft = '2px solid var(--danger)';
 
-                        if (index == 3 && /^\d+$/.test(valorActual.trim())) {
-                            document.getElementById('stat-tot').textContent = parseInt(numTotal) - parseInt(valorActual);
-
-                        }
                     } else {
                         td.style.background = '';
                         td.style.borderLeft = '';
                         if (index == 2) {
                             datos[i].diam = nuevoValor;
                         } else if (index == 3) {
-                            if (!/^\d+$/.test(valorActual.trim())) {
-                                document.getElementById('stat-tot').textContent = parseInt(numTotal) + parseInt(nuevoValor);
-                            } else {
-                                document.getElementById('stat-tot').textContent = parseInt(numTotal) - parseInt(valorActual) + parseInt(nuevoValor);
-                            }
                             datos[i].num = nuevoValor;
 
                         } else if (index == 4) {
@@ -151,11 +139,8 @@ function rellenarTabla(datos) {
                     if (e.key === 'Escape') {
                         td.textContent = valorActual; // cancela el cambio
                     }
-
                 });
-
             });
-
         });
 
         tbody.appendChild(tr);
@@ -163,8 +148,6 @@ function rellenarTabla(datos) {
     });
     document.getElementById('stat-rows').textContent = datos.length;
     document.getElementById('row-count').textContent = `${datos.length} elementos`;
-    document.getElementById('stat-tot').textContent = `${numTotal}`;
-
 }
 
 function limpiar() {
@@ -180,11 +163,12 @@ function limpiar() {
         </tr>
         `;
 
+    document.getElementById('body-error').innerHTML = '';
     document.getElementById('row-count').textContent = "0 elementos";
     document.getElementById('stat-rows').textContent = 0;
-    numTotal = 0;
-    document.getElementById('stat-tot').textContent = "—";
     document.getElementById('confirmar').style.display = 'none';
+    document.getElementById('wrap-error').style.display = 'none';
+    document.getElementById('table-wrap').style.display = 'block';
 }
 
 function confirmar() {
@@ -193,4 +177,26 @@ function confirmar() {
     }
 }
 
-
+function rellenarTablaError(cerramientos) {
+    tbody = document.getElementById('tabla-error');
+    if (cerramientos.length != 0) {
+        document.getElementById('table-wrap').style.display = 'none';
+        document.getElementById('error-count').textContent = `${cerramientos.length} elementos`;
+        document.getElementById('wrap-error').style.display = 'block';
+        cerramientos.forEach(function (fila) {
+            console.log(fila);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${fila.Tipo}</td>
+            <td>${fila.totalCorrugado} kg</td>
+            <td>${fila.Corrugado} kg</td>
+            <td>${Math.abs(parseFloat(fila.totalCorrugado) - parseFloat(fila.Corrugado)).toFixed(2)} kg</td>
+        `;
+            console.log(parseFloat(fila.totalCorrugado));
+            console.log(parseFloat(fila.Corrugado));
+            tbody.appendChild(tr);
+        });
+    } else {
+        document.getElementById('stat-ref-obra').value = '';
+    }
+}

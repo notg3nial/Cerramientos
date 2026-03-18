@@ -50,17 +50,10 @@
             </div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-dot" style="background:#d08fff"></div>
-            <div>
-                <div class="stat-label">Nº. Total</div>
-                <div class="stat-value" id="stat-tot" style="color:#d08fff">—</div>
-            </div>
-        </div>
     </div>
 
     <!-- TABLE -->
-    <div class="table-wrap">
+    <div class="table-wrap" style="display:block;" id="table-wrap">
         <div class="table-header-bar">
             <span class="table-title">Listado de Cerramientos</span>
             <span class="table-badge" id="row-count">0 elementos</span>
@@ -72,7 +65,7 @@
                         <th>Tipo</th>
                         <th>Posición</th>
                         <th>Diámetro (mm)</th>
-                        <th>num posiciones</th>
+                        <th>Número</th>
                         <th>Longitud (cm)</th>
                     </tr>
                 </thead>
@@ -135,6 +128,25 @@
                 <div id="progress-bar"></div>
             </div>
         </div>
+    </div>
+
+    <div class="table-wrap" id="wrap-error" style="display:none; margin-top: 16px;">
+        <div class="table-header-bar">
+            <span class="table-title" style="color: var(--danger)">⚠ Cerramientos con incidencias</span>
+            <span class="table-badge" id="error-count">0 incidencias</span>
+        </div>
+        <table id="tabla-error">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Corrugado Calculado</th>
+                    <th>Corrugado Previsto</th>
+                    <th>Diferencia</th>
+                </tr>
+            </thead>
+            <tbody id="body-error">
+            </tbody>
+        </table>
     </div>
 </body>
 <script src="../js/Api.js"></script>
